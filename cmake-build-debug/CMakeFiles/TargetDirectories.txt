@@ -1,3 +1,0 @@
-/Users/sahils/CLionProjects/USACO/cmake-build-debug/CMakeFiles/USACO.dir
-/Users/sahils/CLionProjects/USACO/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/sahils/CLionProjects/USACO/cmake-build-debug/CMakeFiles/rebuild_cache.dir

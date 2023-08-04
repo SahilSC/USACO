@@ -1,76 +1,60 @@
 #include <iostream>
 #include <vector>
-#include <map>
-#include <algorithm>
-#include <cstdlib>
-
-using ll = long long;
+#include <cmath>
+#include <numeric>
+#include <string>
+#include <queue>
+#include <algorithm> // added this header for std::min
 using namespace std;
 
-int N, Q;
-vector<ll> arr;
-vector<int> inds;
-map<int, int> m;
-vector<ll> bsum;
+int C, Q;
 
-ll computeCost(){
-    ll ans = 0;
-    for (int i = 0; i < N; i++) {
-        ans += (i + 1) * arr[i];
-    }
-    return ans;
-}
 
 int main(){
-    ios::sync_with_stdio(false);
-    cin.tie(0);
-    cin >> N;
-    arr.resize(N);
-    bsum.resize(N + 1);
-    inds.resize(N);
-    vector<ll> answers;
-    for (int i = 0; i < N; i++) {
-        inds[i] = i;
-    }
-    for (int i = 0; i < N; i++) {
-        cin >> arr[i];
-    }
-    sort(inds.begin(), inds.end(), [](int a, int b){ return arr[a] < arr[b]; });
-    for (int i = 0; i < N; i++) {
-        m.insert({inds[i], i});
-    }
-    sort(arr.begin(), arr.end());
-    ll ans = computeCost();
+    cin >> C >> Q;
+    vector<int> arr(Q);
+    vector<int> ans(Q);
+    int totalss = int(pow(2, C));
+    int masks[totalss];
+    fill(masks, masks + totalss, 19);
 
-    //prefix
-    for (int i = N - 1; i >= 0; i--) {
-        bsum[i] = arr[i]+bsum[i +1];
-    }
-    cin >> Q;
-    while (Q--) {
-        if (Q == 0) {
-            int x;
+    queue<int> q;
+    for (int i = 0; i < Q; i++) {
+        string s;
+        cin >> s;
+        for (int j = 0; j < s.length(); j++) {
+            if(s[j]=='H'){
+                arr[i] += 1 << (C - 1 - j);
+            }
         }
-        int i,newind;
-        ll newval, prefixc, switching;
-        cin >> i >> newval,i--;
-        int curind = m[i];
-        ll curval = arr[curind];
-        newind = upper_bound(arr.begin(), arr.end(), newval)-arr.begin();
-        if(newval > curval) {
-            prefixc = -(bsum[curind + 1] - bsum[newind]);
-            switching = (newind)*(newval)-curval * (curind + 1);
-        }
-        else{
-            prefixc = bsum[newind] - bsum[curind];
-            switching = (newind+1)*newval-curval * (curind + 1);
-        }
+        q.push(arr[i]);
+        masks[arr[i]] = 0;
+        arr[i] = ((1 << C)-1) ^ (arr[i]);
 
-        answers.push_back(ans + prefixc + switching);
     }
-    for_each(answers.begin(), answers.end(), [](ll x) { cout << x << "\n"; });
 
 
+    while(!q.empty()){
+        int i = q.front();
+        q.pop();
+
+        if(masks[i]!=19){
+            for(int j = 0; j < C; j++){
+                int nnum = i^(1<<j);
+                if(masks[nnum] != 19)
+                    continue;
+                masks[nnum] = std::min(masks[nnum], 1 + masks[i]); // used std::min instead of min
+                if(masks[nnum] > masks[i])
+                    q.push(nnum);
+
+            }
+        }
+    }
+//    for (int i = 0; i < Q; i++) {
+//        int curmin = 19;
+//        for (int j = 0; j < C; j++) {
+//            curmin = min(curmin, )
+//        }
+//    }
+    for_each(arr.begin(), arr.end(), [&masks](int x){cout << C-masks[x] << "\n";});
 }
-
-
